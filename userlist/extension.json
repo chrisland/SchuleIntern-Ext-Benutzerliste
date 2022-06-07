@@ -30,17 +30,6 @@
       "acl": ["isTeacher", "isEltern", "isPupil", "isNone"]
     },
     {
-      "title": "Erstellen",
-      "icon": "fa fa-user-plus",
-      "url": {
-        "page": "ext_userlist",
-        "params": {
-          "view": "form"
-        }
-      },
-      "hidden": false
-    },
-    {
       "title": "ACL",
       "icon": "fa fa-user-shield",
       "admin": true,

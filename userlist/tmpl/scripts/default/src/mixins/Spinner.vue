@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading == true" class="overlay">
+  <div v-if="loading == true" class="overlay text-white">
     <i class="fa fas fa-sync-alt fa-spin"></i>
   </div>
 </template>
@@ -12,7 +12,7 @@ export default {
     };
   },
   props: {
-    loading: String
+    loading: Boolean
   },
   created: function () {
 

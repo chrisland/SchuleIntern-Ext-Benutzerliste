@@ -1,9 +1,9 @@
 <?php
 
-class extSprechstundeAdminAcl extends AbstractPage {
+class extUserlistAdminAcl extends AbstractPage {
 	
 	public static function getSiteDisplayName() {
-		return '<i class="fas fa-user-shield"></i> Sprechstunde - Benutzerrechte';
+		return '<i class="fas fa-user-shield"></i> Benutzerlisten - Benutzerrechte';
 	}
 
 	public function __construct($request = [], $extension = []) {

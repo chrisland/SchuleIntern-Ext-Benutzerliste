@@ -4,10 +4,7 @@
     <Error v-bind:error="error"></Error>
     <Spinner v-bind:loading="loading"></Spinner>
 
-    <button class="si-btn" v-on:click="handlerOpenForm()">neue Liste erstellen</button>
     <List v-bind:items="items" ></List>
-    <ModalForm v-bind:item="form" ></ModalForm>
-
 
   </div>
 </template>
@@ -38,12 +35,12 @@ export default {
       error: false,
 
       form: {},
-      items: []
+      items: globals.items || []
     };
   },
   created: function () {
 
-    this.loadLists();
+    //this.loadLists();
 
 
 
@@ -52,52 +49,61 @@ export default {
 
     var that = this;
 
-  /*
-    EventBus.$on('form--cancel', data => {
 
-      if (!data.unit.id
-          || !data.unit.createdBy) {
+    EventBus.$on('member--submit', data => {
+
+      if (!data.item_id) {
         console.log('missing');
         return false;
       }
 
       const formData = new FormData();
-      formData.append('id', data.unit.id);
-      formData.append('createdBy', data.unit.createdBy);
+      formData.append('id', data.item_id);
+      if (data.toggle !== undefined) {
+        formData.append('toggle', data.toggle);
+      }
+      if (data.info) {
+        formData.append('info', data.info);
+      }
+
 
       this.loading = true;
       var that = this;
-      axios.post( this.apiURL+'/cancelSlot', formData, {
+      axios.post( this.apiURL+'/setMember', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
-          .then(function(response){
-            if ( response.data ) {
-              if (response.data.error == false) {
+      .then(function(response){
+        if ( response.data ) {
+          if (response.data.error == false) {
 
-                EventBus.$emit('calender--reload', {});
-
-              } else {
-                that.error = ''+response.data.msg;
-              }
-            } else {
-              that.error = 'Fehler beim Laden. 01';
+            //EventBus.$emit('calender--reload', {});
+            if (data.callback) {
+              data.callback();
             }
-          })
-          .catch(function(){
-            that.error = 'Fehler beim Laden. 02';
-          })
-          .finally(function () {
-            // always executed
-            that.loading = false;
-          });
+          } else {
+            that.error = ''+response.data.msg;
+          }
+        } else {
+          that.error = 'Fehler beim Laden. 01';
+        }
+      })
+      .catch(function(){
+        that.error = 'Fehler beim Laden. 02';
+      })
+      .finally(function () {
+        // always executed
+        that.loading = false;
+      });
 
 
 
     });
-  */
 
+
+
+/*
     EventBus.$on('form--submit', data => {
 
       if (!data.item.title
@@ -143,13 +149,15 @@ export default {
 
 
     });
-
+  */
   },
   methods: {
 
+    /*
     handlerOpenForm: function () {
       EventBus.$emit('modal-form--open');
     },
+
     loadLists: function () {
       this.loading = true;
       var that = this;
@@ -175,7 +183,7 @@ export default {
         that.loading = false;
       });
     }
-
+ */
   }
 
 };

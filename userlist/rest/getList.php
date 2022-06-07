@@ -32,14 +32,15 @@ class getList extends AbstractRest {
         if (count($data) > 0) {
             foreach ($data as $item) {
 
-                print_r();
 
                 $collection = $item->getCollection();
 
+                /*
                 $collection['members'] = [];
                 foreach($item->getMembers() as $user) {
                     $collection['members'][] = $user->getCollection();
                 }
+                */
 
                 $collection['owners'] = [];
                 foreach($item->getOwners() as $user) {

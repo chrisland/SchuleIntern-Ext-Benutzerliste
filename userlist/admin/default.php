@@ -1,6 +1,6 @@
 <?php
 
-class extSprechstundeAdminDefault extends AbstractPage {
+class extUserlistAdminDefault extends AbstractPage {
 	
 	public static function getSiteDisplayName() {
 		return '<i class="fas fa-people-arrows"></i> Sprechstunde - Admin Einstellungen';
@@ -40,72 +40,7 @@ class extSprechstundeAdminDefault extends AbstractPage {
 	public static function getSettingsDescription() {
 
 		$settings = array(
-			array(
-				'name' => "extSprechstunde-day-mo",
-				'typ' => "BOOLEAN",
-				'title' => "Montag anzeigen?",
-				'desc' => ""
-			),
-			array(
-				'name' => "extSprechstunde-day-di",
-				'typ' => "BOOLEAN",
-				'title' => "Dienstag anzeigen?",
-				'desc' => ""
-			),
-			array(
-				'name' => "extSprechstunde-day-mi",
-				'typ' => "BOOLEAN",
-				'title' => "Mittwoch anzeigen?",
-				'desc' => ""
-			),
-			array(
-				'name' => "extSprechstunde-day-do",
-				'typ' => "BOOLEAN",
-				'title' => "Donnerstag anzeigen?",
-				'desc' => ""
-			),
-			array(
-				'name' => "extSprechstunde-day-fr",
-				'typ' => "BOOLEAN",
-				'title' => "Freitag anzeigen?",
-				'desc' => ""
-			),
-            array(
-                'name' => "extSprechstunde-day-sa",
-                'typ' => "BOOLEAN",
-                'title' => "Samstag anzeigen?",
-                'desc' => ""
-            ),
-            array(
-                'name' => "extSprechstunde-day-so",
-                'typ' => "BOOLEAN",
-                'title' => "Sonntag anzeigen?",
-                'desc' => ""
-            ),
-            array(
-                'name' => "extSprechstunde-time-start",
-                'typ' => "STRING",
-                'title' => "Uhrzeit - Start",
-                'desc' => "Format: 00:00"
-            ),
-            array(
-                'name' => "extSprechstunde-time-end",
-                'typ' => "STRING",
-                'title' => "Uhrzeit - Ende",
-                'desc' => "Format: 00:00"
-            ),
-            array(
-                'name' => "extSprechstunde-calendar-info-head",
-                'typ' => "HTML",
-                'title' => "Kalender - Hinweis",
-                'desc' => ""
-            ),
-            array(
-                'name' => "extSprechstunde-planer-info-head",
-                'typ' => "HTML",
-                'title' => "Planer - Hinweis",
-                'desc' => ""
-            )
+
 
 		);
 		return $settings;

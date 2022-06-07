@@ -1,10 +1,13 @@
 <template>
   <div>
-
     <Error v-bind:error="error"></Error>
     <Spinner v-bind:loading="loading"></Spinner>
 
-    <Calendar v-bind:dates="dates" v-bind:acl="acl" ></Calendar>
+    <button class="si-btn" v-on:click="handlerOpenForm()">neue Liste erstellen</button>
+    <button class="si-btn" v-on:click="handlerOpenForm()">neue Kategorie erstellen</button>
+
+    <List v-bind:items="items" ></List>
+    <ModalForm v-bind:item="form" ></ModalForm>
 
 
   </div>
@@ -17,45 +20,112 @@ const axios = require('axios').default;
 import Error from './mixins/Error.vue'
 import Spinner from './mixins/Spinner.vue'
 
-import Calendar from './components/Calendar.vue'
+import ModalForm from './mixins/ModalForm.vue'
+
+import Form from './components/Form.vue'
+import List from './components/List.vue'
+
 
 export default {
   components: {
-    Error, Spinner, Calendar
+    Error, Spinner, Form, List, ModalForm
   },
   data() {
     return {
       apiURL: globals.apiURL,
+      acl: globals.acl,
 
       loading: false,
       error: false,
 
-      dates: [],
-
-      acl: globals.acl
-
+      form: {},
+      items: []
     };
   },
   created: function () {
 
-    this.loadDates();
+    this.loadLists();
+
+
+
   },
   mounted() {
 
-  },
-  methods: {
+    var that = this;
 
-    loadDates: function () {
+  /*
+    EventBus.$on('form--cancel', data => {
+
+      if (!data.unit.id
+          || !data.unit.createdBy) {
+        console.log('missing');
+        return false;
+      }
+
+      const formData = new FormData();
+      formData.append('id', data.unit.id);
+      formData.append('createdBy', data.unit.createdBy);
 
       this.loading = true;
       var that = this;
-      axios.get( this.apiURL+'/getDates',{
-            params: []
+      axios.post( this.apiURL+'/cancelSlot', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+          .then(function(response){
+            if ( response.data ) {
+              if (response.data.error == false) {
+
+                EventBus.$emit('calender--reload', {});
+
+              } else {
+                that.error = ''+response.data.msg;
+              }
+            } else {
+              that.error = 'Fehler beim Laden. 01';
+            }
+          })
+          .catch(function(){
+            that.error = 'Fehler beim Laden. 02';
+          })
+          .finally(function () {
+            // always executed
+            that.loading = false;
+          });
+
+
+
+    });
+  */
+
+    EventBus.$on('form--submit', data => {
+
+      if (!data.item.title
+          || !data.members || data.members.length < 1) {
+        console.log('missing');
+        return false;
+      }
+
+      const formData = new FormData();
+      formData.append('title', data.item.title);
+      formData.append('members', data.members);
+      formData.append('owners', data.owners);
+
+      this.loading = true;
+      var that = this;
+      axios.post( this.apiURL+'/setList', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
       .then(function(response){
         if ( response.data ) {
-          if (!response.data.error) {
-            that.dates = response.data;
+          if (response.data.insert) {
+
+            that.loadLists();
+            EventBus.$emit('modal-form--close', {});
+
           } else {
             that.error = ''+response.data.msg;
           }
@@ -64,14 +134,49 @@ export default {
         }
       })
       .catch(function(){
-          that.error = 'Fehler beim Laden. 02';
+        that.error = 'Fehler beim Laden. 02';
       })
       .finally(function () {
         // always executed
         that.loading = false;
       });
 
+
+
+    });
+
+  },
+  methods: {
+
+    handlerOpenForm: function () {
+      EventBus.$emit('modal-form--open');
+    },
+    loadLists: function () {
+      this.loading = true;
+      var that = this;
+      axios.get( this.apiURL+'/getList')
+      .then(function(response){
+        if ( response.data ) {
+          if (!response.data.error) {
+
+            that.items = response.data;
+
+          } else {
+            that.error = ''+response.data.msg;
+          }
+        } else {
+          that.error = 'Fehler beim Laden. 01';
+        }
+      })
+      .catch(function(){
+        that.error = 'Fehler beim Laden. 02';
+      })
+      .finally(function () {
+        // always executed
+        that.loading = false;
+      });
     }
+
   }
 
 };

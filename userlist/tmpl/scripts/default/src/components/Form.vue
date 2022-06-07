@@ -1,85 +1,32 @@
 <template>
 
   <div class="si-form">
+
     <ul class="">
       <li :class="required">
-        <label class="text-bold">Titel</label>
-        <input type="text"  v-model="form.title" maxlength="20" />
+        <label>Titel</label>
+        <input v-model="item.title" />
       </li>
       <li :class="required">
-        <label>Tag</label>
-        <select v-model="form.day">
-          <option v-bind:key="j" v-for="(item, j) in showDays" v-if="item == true">{{j}}</option>
-        </select>
+        <label>Benutzer</label>
+
+        <UserSelect @submit="handlerUserSelectMembers"></UserSelect>
+
+        <span v-bind:key="index" v-for="(item, index) in  members" class="margin-b-s">
+          <User v-bind:data="item"></User>
+        </span>
       </li>
-      <li :class="required" class="flex-row">
-        <div class="flex-1">
-          <label>Uhrzeit</label>
-          <div class="si-clock">
-            <select v-model="form.timeHour" class="hours">
-              <option v-bind:key="j" v-for="(item, j) in formData.hourCount" >{{formData.hourStart+j}}</option>
-            </select>
-            <select v-model="form.timeMinute" class="minutes">
-              <option>00</option>
-              <option>05</option>
-              <option>10</option>
-              <option>15</option>
-              <option>20</option>
-              <option>25</option>
-              <option>30</option>
-              <option>35</option>
-              <option>40</option>
-              <option>45</option>
-              <option>50</option>
-              <option>55</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex flex-1">
-          <label>Dauer in Minuten</label>
-          <select v-model="form.duration">
-            <option>05</option>
-            <option>10</option>
-            <option>15</option>
-            <option>20</option>
-            <option>25</option>
-            <option>30</option>
-            <option>35</option>
-            <option>40</option>
-            <option>45</option>
-            <option>50</option>
-            <option>55</option>
-            <option>60</option>
-          </select>
-        </div>
-      </li>
-      <li :class="required">
-
-        <label>Sichtbar</label>
-
-        <div class="flex-row">
-          <button
-              v-if="form.typ.schueler"
-              v-on:click="handlerToggle('schueler')"
-              class="si-btn si-btn-active margin-r-m"><i class="fa fas fa-toggle-on"></i> Schüler</button>
-          <button
-              v-else-if="!form.typ.schueler"
-              v-on:click="handlerToggle('schueler')"
-              class="si-btn si-btn-light margin-r-m"><i class="fa fas fa-toggle-off"></i> Schüler</button>
-          <button
-              v-if="form.typ.eltern"
-              v-on:click="handlerToggle('eltern')"
-              class="si-btn si-btn-active margin-r-m"><i class="fa fas fa-toggle-on"></i> Eltern</button>
-          <button
-              v-else-if="!form.typ.eltern"
-              v-on:click="handlerToggle('eltern')"
-              class="si-btn si-btn-light margin-r-m"><i class="fa fas fa-toggle-off"></i> Eltern</button>
-        </div>
-
-      </li>
-
       <li>
-        <button @click="submitForm" class="si-btn"><i class="fa fa-save"></i> Speichern</button>
+        <label>Liste Teilen mit</label>
+
+        <UserSelect @submit="handlerUserSelectOwners"></UserSelect>
+
+        <span v-bind:key="index" v-for="(item, index) in  owners" class="margin-b-s">
+          <User v-bind:data="item"></User>
+        </span>
+      </li>
+      <li>
+        <button @click="submitForm" class="si-btn"><i class="fa fa-save"></i> Buchen</button>
       </li>
     </ul>
   </div>
@@ -88,12 +35,15 @@
 
 
 <script>
+import User from "../mixins/User.vue";
+import UserSelect from '../mixins/UserSelect.vue'
 
 export default {
+  components: {
+    User, UserSelect
+  },
   name: 'Form',
   props: {
-    showDays: Array,
-    formData: Array,
     item: Object
   },
   data(){
@@ -102,79 +52,56 @@ export default {
       error: false,
       required: '',
 
-      form: {
-        timeHour: '',
-        timeMinute: '',
-        title: '',
-        day: '',
-        duration: '',
-        typ: {
-          schueler: false,
-          eltern: false
-        }
-      }
-
+      members: false,
+      owners: false
     }
   },
   created: function () {
   },
-
-  watch: {
-    item: {
-      immediate: true,
-      handler (val, oldVal) {
-        //console.log(val, oldVal);
-
-        if (val.id) {
-          this.form.id = val.id;
-          this.form.title = val.title;
-          this.form.day = val.day;
-          this.form.duration = val.duration;
-          this.form.typ = val.typ;
-
-          let time = val.time.split(':');
-
-          this.form.timeHour = time[0];
-          this.form.timeMinute = time[1];
-
-        }
-      }
-    }
+  mounted() {
+    // access our input using template refs, then focus
   },
-
   methods: {
 
-    handlerToggle: function (typ) {
-
-      //console.log(this.form.typ[typ]);
-
-      if (typ) {
-        if (this.form.typ[typ] == true) {
-          this.form.typ[typ] = false;
-        } else {
-          this.form.typ[typ] = true;
-        }
-      }
-
+    handlerUserSelectMembers: function (userlist) {
+      this.members = userlist;
+      //this.item.members = [...this.item.members, ...userlist];
     },
+    handlerUserSelectOwners: function (userlist) {
+      this.owners = userlist;
+      //this.item.members = [...this.item.members, ...userlist];
+    },
+
     submitForm: function () {
       var that = this;
       //this.form.date = this.$date(this.form.date).format('YYYY-MM-DD')
 
-      if (!this.form.timeHour
-          || !this.form.timeMinute
-          || !this.form.title
-          || !this.form.day
-          || !this.form.duration
-          || ( this.form.typ.eltern == false && this.form.typ.schueler == false )
-      ) {
+      if (!this.item.title) {
         console.log('missing');
         this.required = 'required';
         return false;
       }
 
+      let members = [];
+      if (that.members.length > 0) {
+        that.members.forEach((o) => {
+          members.push(o.id);
+        });
+      } else {
+        this.required = 'required';
+        return false;
+      }
+      let owners = [];
+      if (that.owners.length > 0) {
+        that.owners.forEach((o) => {
+          owners.push(o.id);
+        });
+      }
+
       EventBus.$emit('form--submit', {
-        form: that.form
+        item: that.item,
+        members: JSON.stringify(members),
+        owners: JSON.stringify(owners)
       });
 
     }

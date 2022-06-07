@@ -54,6 +54,9 @@ class extUserlistModelList
      * @return
      */
     public function getStatsMember() {
+        if ( !$this->members ) {
+            $this->loadMembers();
+        }
         return $this->members_stats;
     }
 
@@ -81,14 +84,18 @@ class extUserlistModelList
     }
 
     public function loadMembers() {
+
+        include_once PATH_EXTENSIONS.'userlist'.DS.'models'.DS.'Member.class.php';
         $this->members = [];
         $dataSQL = DB::getDB()->query("SELECT * FROM ext_userlist_list_members WHERE list_id = ".$this->getID() );
         while ($data = DB::getDB()->fetch_array($dataSQL, true)) {
             $user = user::getUserByID($data['user_id']);
             if (isset($this->members_stats[$user->getUserTyp(true)])) {
                 $this->members_stats[$user->getUserTyp(true)]++;
+                $this->members_stats['count']++;
             }
-            $this->members[] = $user;
+            //$this->members[] = $user;
+            $this->members[] = new extUserlistModelMember($data, $user);
         }
     }
 
@@ -107,12 +114,19 @@ class extUserlistModelList
         }
     }
 
-    public function getCollection() {
+    public function getCollection($full = false) {
 
         $collection = [
             "id" => $this->getID(),
             "title" => $this->getTitle()
         ];
+        if ($full == true) {
+            if ( $this->data['cck_id'] ) {
+                include_once PATH_EXTENSIONS.'cck'.DS.'models'.DS.'Article.class.php';
+                $collection["article"] = extCckModelArticle::getByID( $this->data['cck_id'] )->renderTemplate();
+            }
+
+        }
 
         return $collection;
     }
@@ -122,9 +136,9 @@ class extUserlistModelList
     /**
      * @return Array[]
      */
-    public static function getAllByOwner($user_id) {
+    public static function getAllByOwner($user_id = false) {
 
-        if (!$user_id) {
+        if (!(int)$user_id) {
             return false;
         }
         $ret =  [];
@@ -137,6 +151,30 @@ class extUserlistModelList
         }
         return $ret;
     }
+
+    /**
+     * @return Array[]
+     */
+    public static function getByID($id = false, $user_id = false) {
+
+        if (!(int)$id) {
+            return false;
+        }
+        if (!(int)$user_id) {
+            return false;
+        }
+        $dataSQL = DB::getDB()->query_first("SELECT  b.*
+            FROM ext_userlist_list_owner as a
+            LEFT JOIN ext_userlist_list as b ON a.list_id = b.id
+            WHERE a.list_id =  ".(int)$id." AND a.user_id =  ".(int)$user_id, true);
+
+        if ($dataSQL) {
+            return new self($dataSQL);
+        }
+
+    }
+
+
 
 
 

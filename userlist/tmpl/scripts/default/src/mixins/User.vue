@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span v-if="data">
 
     <div v-if="size == 'line'" class="si-user si-user-line" :class="data.type" v-on:click="handlerOpen">
       {{ data.name }}
