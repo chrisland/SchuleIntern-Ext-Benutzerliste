@@ -38,8 +38,8 @@ export default {
     EventBus.$on('modal-form--open', data => {
       /*if (data.item) {
         that.item = data.item;
-      }
-      */
+      }*/
+
       that.open = true;
     });
     EventBus.$on('modal-form--close', data => {

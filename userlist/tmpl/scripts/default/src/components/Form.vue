@@ -1,36 +1,44 @@
 <template>
 
-  <div class="si-form">
+  <div>
+    <div class="flex-row">
+      <div class="flex-1">
+        <a href="#list" class="si-btn si-btn-light" v-on:click="handlerBack"><i class="fa fa-angle-left"></i> Zurück</a>
+      </div>
+    </div>
 
-    <ul class="">
-      <li :class="required">
-        <label>Titel</label>
-        <input v-model="item.title" />
-      </li>
-      <li :class="required">
-        <label>Benutzer</label>
+    <div class="si-form">
 
-        <UserSelect @submit="handlerUserSelectMembers"></UserSelect>
+      <ul class="">
+        <li :class="required">
+          <label>Titel</label>
+          <input v-model="item.title" />
+        </li>
+        <li :class="required" class="">
+          <label>Benutzer</label>
+          <UserSelect @submit="handlerUserSelectMembers" :preselected="item.members"></UserSelect>
+          <div class="padding-t-s">
+            <span v-bind:key="index" v-for="(item, index) in  item.members" class="margin-b-s margin-r-s blockInline">
+              <User v-bind:data="item"></User>
+            </span>
+          </div>
+        </li>
+        <li>
+          <label>Liste Teilen mit</label>
 
-        <span v-bind:key="index" v-for="(item, index) in  members" class="margin-b-s">
-          <User v-bind:data="item"></User>
-        </span>
-      </li>
-      <li>
-        <label>Liste Teilen mit</label>
-
-        <UserSelect @submit="handlerUserSelectOwners"></UserSelect>
-
-        <span v-bind:key="index" v-for="(item, index) in  owners" class="margin-b-s">
-          <User v-bind:data="item"></User>
-        </span>
-      </li>
-      <li>
-        <button @click="submitForm" class="si-btn"><i class="fa fa-save"></i> Buchen</button>
-      </li>
-    </ul>
+          <UserSelect @submit="handlerUserSelectOwners" :preselected="item.owners"></UserSelect>
+          <div class="padding-t-s">
+            <span v-bind:key="index" v-for="(item, index) in  item.owners" class="margin-b-s margin-r-s blockInline">
+              <User v-bind:data="item"></User>
+            </span>
+          </div>
+        </li>
+        <li>
+          <button @click="submitForm" class="si-btn"><i class="fa fa-save"></i> Speichern</button>
+        </li>
+      </ul>
+    </div>
   </div>
-
 </template>
 
 
@@ -51,9 +59,7 @@ export default {
 
       error: false,
       required: '',
-
-      members: false,
-      owners: false
+      back: 'list'
     }
   },
   created: function () {
@@ -63,12 +69,25 @@ export default {
   },
   methods: {
 
+    handlerBack: function () {
+
+      if (this.item.id) {
+        EventBus.$emit('tab--open', {
+          tabOpen: 'item'
+        });
+      } else {
+        EventBus.$emit('tab--open', {
+          tabOpen: 'list'
+        });
+      }
+
+    },
     handlerUserSelectMembers: function (userlist) {
-      this.members = userlist;
+      this.item.members = userlist;
       //this.item.members = [...this.item.members, ...userlist];
     },
     handlerUserSelectOwners: function (userlist) {
-      this.owners = userlist;
+      this.item.owners = userlist;
       //this.item.members = [...this.item.members, ...userlist];
     },
 
@@ -83,8 +102,8 @@ export default {
       }
 
       let members = [];
-      if (that.members.length > 0) {
-        that.members.forEach((o) => {
+      if (that.item.members.length > 0) {
+        that.item.members.forEach((o) => {
           members.push(o.id);
         });
       } else {
@@ -92,8 +111,8 @@ export default {
         return false;
       }
       let owners = [];
-      if (that.owners.length > 0) {
-        that.owners.forEach((o) => {
+      if (that.item.owners.length > 0) {
+        that.item.owners.forEach((o) => {
           owners.push(o.id);
         });
       }

@@ -25,18 +25,20 @@ class setList extends AbstractRest {
         }
 
         $acl = $this->getAcl();
-        if ((int)$acl['rights']['write'] !== 1 && (int)DB::getSession()->getUser()->isAnyAdmin() !== 1 ) {
+        if ((int)$acl['rights']['write'] !== 1 && (int)DB::getSession()->isMember($this->extension['adminGroupName']) !== 1 ) {
             return [
                 'error' => true,
                 'msg' => 'Kein Zugriff'
             ];
         }
 
+        $list_id = (int)$input['id'];
+
+        if ($list_id > 0) {
 
 
-        if ((int)$input['id'] > 0) {
 
-            /*
+
             if ((int)$acl['rights']['write'] !== 1 && (int)DB::getSession()->getUser()->isAnyAdmin() !== 1 ) {
                 return [
                     'error' => true,
@@ -44,13 +46,9 @@ class setList extends AbstractRest {
                 ];
             }
 
-            if (!DB::getDB()->query("UPDATE ext_sprechstunde_slots
-                SET title='" . DB::getDB()->escapeString($input['title']) . "',
-                time='" . $time_str . "',
-                day='" . DB::getDB()->escapeString($input['day']) . "',
-                duration='" . DB::getDB()->escapeString($input['duration']) . "',
-                typ='" . $_POST['typ'] . "'
-                WHERE id=".(int)$input['id']
+            if (!DB::getDB()->query("UPDATE ext_userlist_list
+                SET title='" . DB::getDB()->escapeString($input['title']) . "'
+                WHERE id=".$list_id
             )) {
                 return [
                     'error' => true,
@@ -58,11 +56,86 @@ class setList extends AbstractRest {
                 ];
             }
 
+
+
+            $members = array_map('intval',json_decode($_POST['members']) );
+            if (count($members) > 0) {
+                $userDB = [];
+                $dataSQL = DB::getDB()->query("SELECT * FROM ext_userlist_list_members WHERE list_id = " . $list_id);
+                while ($data = DB::getDB()->fetch_array($dataSQL, true)) {
+                    $userDB[] = (int)$data['user_id'];
+                }
+                $diff_remove = array_diff( $userDB, $members );
+                $diff_add = array_diff( $members, $userDB );
+                foreach ($diff_remove as $user) {
+                    if (!DB::getDB()->query("DELETE FROM ext_userlist_list_members WHERE list_id = ".$list_id." AND user_id=".$user )) {
+                        return [
+                            'error' => true,
+                            'msg' => 'Fehler beim Löschen der Benutzer (3)!'
+                        ];
+                    }
+                }
+                foreach ($diff_add as $user) {
+                    if (!DB::getDB()->query("INSERT INTO ext_userlist_list_members
+                            (
+                                list_id,
+                                user_id
+                            ) values(
+                                ".$list_id.",
+                                ".(int)$user."
+                            )
+                        ")) {
+                        return [
+                            'error' => true,
+                            'msg' => 'Fehler beim Hinzufügen! (list_member)'
+                        ];
+                    }
+                }
+            }
+
+            $owners = array_map('intval',json_decode($_POST['owners']) );
+            $owners[] = $userID; // add self User
+            if (count($owners) > 0) {
+                $userDB = [];
+                $dataSQL = DB::getDB()->query("SELECT * FROM ext_userlist_list_owner WHERE list_id = " . $list_id);
+                while ($data = DB::getDB()->fetch_array($dataSQL, true)) {
+                    $userDB[] = (int)$data['user_id'];
+                }
+                $diff_remove = array_diff( $userDB, $owners );
+                $diff_add = array_diff( $owners, $userDB );
+                foreach ($diff_remove as $user) {
+                    if (!DB::getDB()->query("DELETE FROM ext_userlist_list_owner WHERE list_id = ".$list_id." AND user_id=".$user )) {
+                        return [
+                            'error' => true,
+                            'msg' => 'Fehler beim Löschen der Benutzer (3)!'
+                        ];
+                    }
+                }
+                foreach ($diff_add as $user) {
+                    if (!DB::getDB()->query("INSERT INTO ext_userlist_list_owner
+                            (
+                                list_id,
+                                user_id
+                            ) values(
+                                ".$list_id.",
+                                ".(int)$user."
+                            )
+                        ")) {
+                        return [
+                            'error' => true,
+                            'msg' => 'Fehler beim Hinzufügen! (list_member)'
+                        ];
+                    }
+                }
+            }
+
+
+
             return [
                 'error' => false,
                 'insert' => true
             ];
-*/
+
         } else {
 
             if (!DB::getDB()->query("INSERT INTO ext_userlist_list

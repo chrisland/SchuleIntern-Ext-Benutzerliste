@@ -49,21 +49,26 @@ class extUserlistModelMember
     public function getID() {
         return $this->data['id'];
     }
-    public function getToggle() {
-        return $this->data['toggle'];
+    public function getListID() {
+        return $this->data['list_id'];
     }
-    public function getInfo() {
-        return $this->data['info'];
+    public function getUserID() {
+        return $this->data['user_id'];
     }
+
 
     public function getCollection($full = false) {
 
-        $collection = [
-            "id" => $this->getID(),
-            "toggle" => $this->getToggle(),
-            "info" => $this->getInfo(),
-        ];
+
         if ($this->user) {
+            $collection = $this->user->getCollection();
+
+        } else {
+            $collection = [
+                "id" => $this->getUserID(),
+                "list_id" => $this->getListID(),
+                "member_id" => $this->getID()
+            ];
             $user = $this->user->getCollection();
             $collection['vorname'] = $user['vorname'];
             $collection['nachname'] = $user['nachname'];

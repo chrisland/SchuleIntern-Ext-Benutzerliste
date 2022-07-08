@@ -6,7 +6,8 @@
     <Spinner v-bind:loading="loading"></Spinner>
 
     <div v-if="!state">
-      <button class="si-btn" v-on:click="handlerOpenForm"><i class="fas fa-plus"></i> Benutzer hinzufügen</button>
+      <button v-if="selected.length == 0" class="si-btn si-btn-green" v-on:click="handlerOpenForm"><i class="fas fa-plus"></i> Benutzer hinzufügen</button>
+      <button v-else class="si-btn" v-on:click="handlerOpenForm"><i class="fas fa-plus"></i> Benutzerliste bearbeiten</button>
     </div>
 
     <div v-if="state == 'form'">
@@ -71,7 +72,7 @@
                               v-on:click="handlerFilterType('isNone')">Sonstige</button>
                     </div>
                   </li>
-                  <li>
+                  <li v-if="selected">
                     <label>Auswahl:</label>
                     <div class="text-right text-small">{{selected.length}}</div>
                     <div v-if="selected.length > 0" >
@@ -132,16 +133,21 @@ export default {
 
       required: false,
 
+      selected: [],
+
       state: false,
       searchString: '',
 
       filterType: '',
 
-      users: false,
-      selected: []
+      users: false
     };
   },
   props: {
+    preselected: Array
+  },
+  mounted: function () {
+    this.selected = this.preselected;
   },
   created: function () {
 

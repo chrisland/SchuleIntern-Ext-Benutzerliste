@@ -5,33 +5,7 @@
       <button class="si-modal-btn-close" v-on:click="handlerClose"></button>
       <div class="si-modal-content">
 
-        <table class="si-table">
-          <tbody>
-          <tr>
-            <td><label>Raum</label></td>
-            <td>{{unit.room}}</td>
-          </tr>
-          <tr>
-            <td><label>Betreff</label></td>
-            <td>{{unit.subject}}</td>
-          </tr>
-          <tr>
-            <td><label>Lehrer</label></td>
-            <td>{{unit.teacher}}</td>
-          </tr>
-          <tr>
-            <td><label>Klasse</label></td>
-            <td>{{unit.grade}}</td>
-          </tr>
-          <tr class="text-small">
-            <td><label>Erstellt</label></td>
-            <td>{{unit.createdTime}}</td>
-          </tr>
-          </tbody>
-        </table>
-
-        <button v-if="unit.createdSelf && !cancelSecond " @click="cancelItemFirst" class="si-btn"><i class="fa fa-save"></i> Stornieren</button>
-        <button v-if="unit.createdSelf && cancelSecond" @click="cancelItemSecond" class="si-btn si-btn-red"><i class="fa fa-save"></i> Stornieren</button>
+        <Item v-bind:item="item"></Item>
 
       </div>
     </div>
@@ -42,45 +16,40 @@
 <script>
 
 
+import Item from '../components/Item.vue'
+
+
 export default {
 
   components: {
-
+    Item
   },
   data() {
     return {
-      open: false,
-      cancelSecond: false
+      open: false
     };
   },
   props: {
-    unit: Object
+    item: Object
   },
   created: function () {
-
     var that = this;
     EventBus.$on('modal-item--open', data => {
-      that.unit = data.unit;
+      /*
+      if (data.item) {
+        that.item = data.item;
+      }*/
+
       that.open = true;
     });
     EventBus.$on('modal-item--close', data => {
       that.open = false;
+      //that.item = {};
     });
-
   },
   methods: {
     handlerClose: function () {
       EventBus.$emit('modal-item--close');
-    },
-    cancelItemFirst: function () {
-      this.cancelSecond = true;
-    },
-    cancelItemSecond: function () {
-      //console.log(this.unit);
-      EventBus.$emit('form--cancel', {
-        unit: this.unit
-      });
-
     }
   }
 

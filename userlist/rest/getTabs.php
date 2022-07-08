@@ -1,6 +1,6 @@
 <?php
 
-class getList extends AbstractRest {
+class getTabs extends AbstractRest {
 	
 	protected $statusCode = 200;
 
@@ -8,11 +8,12 @@ class getList extends AbstractRest {
 	public function execute($input, $request) {
 
 
-        $userID = DB::getSession()->getUser()->getUserID();
-        if (!$userID) {
+
+        $list_id = (int)$request[2];
+        if (!$list_id) {
             return [
                 'error' => true,
-                'msg' => 'Missing User ID'
+                'msg' => 'Missing List ID'
             ];
         }
 
@@ -24,9 +25,9 @@ class getList extends AbstractRest {
             ];
         }
 
-        include_once PATH_EXTENSION . 'models' . DS . 'List.class.php';
+        include_once PATH_EXTENSION . 'models' . DS . 'Tab.class.php';
 
-        $data = extUserlistModelList::getAllByOwner($userID);
+        $data = extUserlistModelTab::getAllByList($list_id);
 
         $ret = [];
         if (count($data) > 0) {
@@ -34,31 +35,6 @@ class getList extends AbstractRest {
 
 
                 $collection = $item->getCollection();
-
-
-                $collection['members'] = [];
-                foreach($item->getMembers() as $user) {
-                    $collection['members'][] = $user->getCollection();
-                }
-
-
-                $collection['owners'] = [];
-                foreach($item->getOwners() as $user) {
-                    if ($userID != $user->getUserID()) {
-                        $collection['owners'][] = $user->getCollection();
-                    }
-
-                }
-
-                /*
-                $collection['tabs'] = [];
-                foreach($item->getTabs() as $user) {
-                    $collection['tabs'][] = $user->getCollection();
-                }
-                */
-
-
-                $collection['stats'] = $item->getStatsMember();
 
                 $ret[] = $collection;
             }

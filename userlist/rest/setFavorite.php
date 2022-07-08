@@ -1,6 +1,6 @@
 <?php
 
-class setMember extends AbstractRest {
+class setFavorite extends AbstractRest {
 	
 	protected $statusCode = 200;
 
@@ -15,61 +15,53 @@ class setMember extends AbstractRest {
                 'msg' => 'Missing User ID'
             ];
         }
-        $item_id = (int)$input['id'];
 
+        $item_id = (int)$input['id'];
         if ( !$item_id  ) {
             //die('missing data');
             return [
                 'error' => true,
-                'msg' => 'Missing DataID'
+                'msg' => 'Missing ID'
             ];
         }
 
         $acl = $this->getAcl();
-        if ((int)$acl['rights']['write'] !== 1 && (int)DB::getSession()->getUser()->isAnyAdmin() !== 1 ) {
+        if ((int)$acl['rights']['write'] !== 1 && (int)DB::getSession()->isMember($this->extension['adminGroupName']) !== 1 ) {
             return [
                 'error' => true,
                 'msg' => 'Kein Zugriff'
             ];
         }
 
+        $fav = 0;
 
+        $data = DB::getDB()->query_first("SELECT * FROM ext_userlist_list_owner WHERE list_id =".$item_id." AND user_id = ".(int)$userID);
 
-        if ($item_id > 0) {
+        if ( $data['id'] ) {
 
-            if ($input['toggle']) {
-                if (!DB::getDB()->query("UPDATE ext_userlist_list_members
-                SET toggle= " . DB::getDB()->escapeString($input['toggle']) . "
-                WHERE id=".$item_id
-                )) {
-                    return [
-                        'error' => true,
-                        'msg' => 'Fehler beim Speichern!'
-                    ];
-                }
+            if ( $data['favorite'] == 1 ) {
+                $fav = 0;
+            } else {
+                $fav = 1;
             }
 
-            if ($input['info']) {
-                if (!DB::getDB()->query("UPDATE ext_userlist_list_members
-                SET info='" . DB::getDB()->escapeString($input['info']) . "'
-                WHERE id=".$item_id
-                )) {
-                    return [
-                        'error' => true,
-                        'msg' => 'Fehler beim Speichern!'
-                    ];
-                }
+            if (!DB::getDB()->query("UPDATE ext_userlist_list_owner
+            SET favorite=".$fav."
+            WHERE id=".$data['id']
+            )) {
+                return [
+                    'error' => true,
+                    'msg' => 'Fehler beim Speichern!'
+                ];
+            } else {
+                return [
+                    'error' => false,
+                    'update' => true,
+                    'favorite' => $fav
+                ];
             }
-
-
-
-            return [
-                'error' => false,
-                'insert' => true
-            ];
 
         }
-
 
 
 

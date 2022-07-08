@@ -1,18 +1,25 @@
 <?php
 
-class getList extends AbstractRest {
+class getContent extends AbstractRest {
 	
 	protected $statusCode = 200;
 
 
 	public function execute($input, $request) {
 
-
-        $userID = DB::getSession()->getUser()->getUserID();
-        if (!$userID) {
+        $tab_id = (int)$input['tab_id'];
+        if (!$tab_id) {
             return [
                 'error' => true,
-                'msg' => 'Missing User ID'
+                'msg' => 'Missing Tab ID'
+            ];
+        }
+
+        $list_id = (int)$input['list_id'];
+        if (!$list_id) {
+            return [
+                'error' => true,
+                'msg' => 'Missing Tab ID'
             ];
         }
 
@@ -24,41 +31,16 @@ class getList extends AbstractRest {
             ];
         }
 
-        include_once PATH_EXTENSION . 'models' . DS . 'List.class.php';
+        include_once PATH_EXTENSION . 'models' . DS . 'Content.class.php';
 
-        $data = extUserlistModelList::getAllByOwner($userID);
+        $data = extUserlistModelContent::getMembersWithContentByTab($tab_id, $list_id);
 
         $ret = [];
         if (count($data) > 0) {
             foreach ($data as $item) {
 
 
-                $collection = $item->getCollection();
-
-
-                $collection['members'] = [];
-                foreach($item->getMembers() as $user) {
-                    $collection['members'][] = $user->getCollection();
-                }
-
-
-                $collection['owners'] = [];
-                foreach($item->getOwners() as $user) {
-                    if ($userID != $user->getUserID()) {
-                        $collection['owners'][] = $user->getCollection();
-                    }
-
-                }
-
-                /*
-                $collection['tabs'] = [];
-                foreach($item->getTabs() as $user) {
-                    $collection['tabs'][] = $user->getCollection();
-                }
-                */
-
-
-                $collection['stats'] = $item->getStatsMember();
+                $collection = $item->getCollection(true);
 
                 $ret[] = $collection;
             }
@@ -76,7 +58,7 @@ class getList extends AbstractRest {
 	 * @return String
 	 */
 	public function getAllowedMethod() {
-		return 'GET';
+		return 'POST';
 	}
 
 
