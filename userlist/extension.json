@@ -1,9 +1,9 @@
 {
   "name": "Benutzerlisten",
   "uniqid": "ext.zwiebelgasse.userlist",
-  "version": "1",
+  "version": "2",
 
-  "requiredVersion": "1.4.1",
+  "requiredVersion": "1.4.2",
 
   "menu": {
     "categorie": "1",
@@ -37,18 +37,6 @@
         "page": "ext_userlist",
         "params": {
           "view": "acl",
-          "admin": "true"
-        }
-      }
-    },
-    {
-      "title": "Einstellungen",
-      "icon": "fa fa-cogs",
-      "admin": true,
-      "url": {
-        "page": "ext_userlist",
-        "params": {
-          "view": "default",
           "admin": "true"
         }
       }

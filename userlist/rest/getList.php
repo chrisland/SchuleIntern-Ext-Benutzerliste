@@ -35,34 +35,26 @@ class getList extends AbstractRest {
 
                 $collection = $item->getCollection();
 
-
                 $collection['members'] = [];
                 foreach($item->getMembers() as $user) {
-                    $collection['members'][] = $user->getCollection();
+                    if ($user) {
+                        $collection['members'][] = $user->getCollection(false, true);
+                    }
                 }
-
 
                 $collection['owners'] = [];
                 foreach($item->getOwners() as $user) {
-                    if ($userID != $user->getUserID()) {
-                        $collection['owners'][] = $user->getCollection();
+                    if ($user && $userID != $user->getUserID()) {
+                        $collection['owners'][] = $user->getCollection(false, true);
                     }
-
                 }
-
-                /*
-                $collection['tabs'] = [];
-                foreach($item->getTabs() as $user) {
-                    $collection['tabs'][] = $user->getCollection();
-                }
-                */
-
 
                 $collection['stats'] = $item->getStatsMember();
 
                 $ret[] = $collection;
             }
         }
+
 
         return $ret;
 

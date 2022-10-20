@@ -61,7 +61,7 @@ class extUserlistModelMember
 
 
         if ($this->user) {
-            $collection = $this->user->getCollection();
+            $collection = $this->user->getCollection(false, true);
 
         } else {
             $collection = [
@@ -69,11 +69,13 @@ class extUserlistModelMember
                 "list_id" => $this->getListID(),
                 "member_id" => $this->getID()
             ];
+            /*
             $user = $this->user->getCollection();
             $collection['vorname'] = $user['vorname'];
             $collection['nachname'] = $user['nachname'];
             $collection['name'] = $user['name'];
             $collection['type'] = $user['type'];
+            */
         }
 
         return $collection;

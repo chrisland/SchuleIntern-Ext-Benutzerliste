@@ -72,7 +72,8 @@ class extUserlistDefault extends AbstractPage {
         include_once PATH_EXTENSION . 'models' . DS . 'Content.class.php';
         $data_content = extUserlistModelContent::getMembersWithContentByTab($tab_id, $list_id);
 
-
+        include_once('../framework/lib/phpexcel/PHPExcel.php');
+        
         $excelFile = new PHPExcel();
         $today = date('d_m_Y', time() );
 

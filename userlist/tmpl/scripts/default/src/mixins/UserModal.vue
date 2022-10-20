@@ -41,7 +41,7 @@ export default {
     };
   },
   props: {
-      data: Object
+      data: Object | Boolean
   },
   created: function () {
 

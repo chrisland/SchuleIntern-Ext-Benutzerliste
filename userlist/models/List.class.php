@@ -58,6 +58,7 @@ class extUserlistModelList
         if ( !$this->members ) {
             $this->loadMembers();
         }
+
         return $this->members_stats;
     }
 
@@ -128,13 +129,17 @@ class extUserlistModelList
         $dataSQL = DB::getDB()->query("SELECT * FROM ext_userlist_list_members WHERE list_id = ".$this->getID() );
 
         while ($data = DB::getDB()->fetch_array($dataSQL, true)) {
-            $user = user::getUserByID($data['user_id']);
-            if (isset($this->members_stats[$user->getUserTyp(true)])) {
-                $this->members_stats[$user->getUserTyp(true)]++;
-                $this->members_stats['count']++;
+            if ($data['user_id']) {
+                $user = user::getUserByID($data['user_id']);
+                if ($user) {
+                    if (isset($this->members_stats[$user->getUserTyp(true)])) {
+                        $this->members_stats[$user->getUserTyp(true)]++;
+                        $this->members_stats['count']++;
+                    }
+                }
+
+                $this->members[] = new extUserlistModelMember($data, $user);
             }
-            //$this->members[] = $user;
-            $this->members[] = new extUserlistModelMember($data, $user);
         }
     }
 

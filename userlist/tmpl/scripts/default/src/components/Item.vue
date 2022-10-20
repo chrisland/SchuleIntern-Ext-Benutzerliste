@@ -71,7 +71,7 @@
           <input class="si-input" placeholder="Titel ..." v-model="tabActive.title"
                  v-on:change="handlerChangeTabTitle">
 
-          <a :href="'index.php?page=ext_userlist&view=default&task=print&id='+tabActive.id+'&list_id='+tabActive.list_id" class="si-btn si-btn-icon si-btn-light"><i
+          <a :href="'index.php?page=ext_userlist&view=default&task=print&id='+tabActive.id+'&list_id='+tabActive.list_id" target="_blank" class="si-btn si-btn-icon si-btn-light"><i
               class="fa fas fa-print"></i></a>
           <a :href="'index.php?page=ext_userlist&view=default&task=export&id='+tabActive.id+'&list_id='+tabActive.list_id" class="si-btn si-btn-icon si-btn-light"><i
               class="fa fas fa-download"></i></a>
@@ -188,8 +188,8 @@ export default {
   created: function () {
   },
   mounted() {
-    console.log(this.tabs);
-    console.log(this.tabActive);
+    //console.log(this.tabs);
+    //console.log(this.tabActive);
 
   },
   methods: {

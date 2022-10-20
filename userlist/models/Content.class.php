@@ -71,11 +71,14 @@ class extUserlistModelContent
 
         if ($full) {
             $user = user::getUserByID($collection['user_id']);
-            $user_collection = $user->getCollection();
-            $collection['vorname'] = $user_collection['vorname'];
-            $collection['nachname'] = $user_collection['nachname'];
-            $collection['name'] = $user_collection['name'];
-            $collection['type'] = $user_collection['type'];
+            if ($user) {
+                $user_collection = $user->getCollection();
+                $collection['vorname'] = $user_collection['vorname'];
+                $collection['nachname'] = $user_collection['nachname'];
+                $collection['name'] = $user_collection['name'];
+                $collection['type'] = $user_collection['type'];
+            }
+
         }
 
 

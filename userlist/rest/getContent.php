@@ -39,10 +39,7 @@ class getContent extends AbstractRest {
         if (count($data) > 0) {
             foreach ($data as $item) {
 
-
-                $collection = $item->getCollection(true);
-
-                $ret[] = $collection;
+                $ret[] = $item->getCollection(true);
             }
         }
 
